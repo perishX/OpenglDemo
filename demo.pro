@@ -17,10 +17,12 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     main.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    myopenglwidget.cpp
 
 HEADERS += \
-    mainwindow.h
+    mainwindow.h \
+    myopenglwidget.h
 
 FORMS += \
     mainwindow.ui
@@ -34,3 +36,5 @@ RESOURCES += \
     icon.qrc
 
 RC_ICONS = home.ico
+
+CONFIG +=console
