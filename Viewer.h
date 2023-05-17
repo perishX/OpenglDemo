@@ -1,5 +1,10 @@
 #ifndef VIEWER_H
 #define VIEWER_H
+
+#include "glm/glm.hpp"
+#include "glm/gtc/matrix_transform.hpp"
+#include "glm/gtc/type_ptr.hpp"
+
 class Viewer{
 public:
     Viewer();
@@ -19,5 +24,5 @@ private:
     float forwardFlag{};
     float rightFlag{};
     float upFlag{};
-}
+};
 #endif // VIEWER_H
