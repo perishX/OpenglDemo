@@ -16,6 +16,12 @@ public:
     void init(const char* vertexShaderPath,const char* fragmentShaderPath);
     void init(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath);
     unsigned int getID();
+    void setInt(const char * name,int value);
+    void setFloat(const char * name,float value);
+    void setBool(const char * name,bool value);
+    void setVector3f(const char * name, int count,const float* value);
+    void setVector2f(const char * name, int count,const float* value);
+    void setMatrix4f(const char * name, int count,const float* value);
 protected:
 private:
     unsigned int getVertexShader(const char* vertexShaderPath);

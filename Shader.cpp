@@ -1,7 +1,7 @@
 #include "Shader.h"
 
 Shader::Shader(){
-    initializeOpenGLFunctions();
+
 }
 
 Shader::Shader(const char* vertexShaderPath,const char* fragmentShaderPath){
@@ -19,6 +19,7 @@ unsigned int Shader::getID(){
 }
 
 void Shader::init(const char* vertexShaderPath,const char* fragmentShaderPath){
+    initializeOpenGLFunctions();
     unsigned int vertexShader=this->getVertexShader(vertexShaderPath);
     unsigned int fragmentShader=this->getFragmentShader(fragmentShaderPath);
 
@@ -48,6 +49,7 @@ void Shader::init(const char* vertexShaderPath,const char* fragmentShaderPath){
 }
 
 void Shader::init(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath){
+    initializeOpenGLFunctions();
     unsigned int vertexShader=this->getVertexShader(vertexShaderPath);
     unsigned int fragmentShader=this->getFragmentShader(fragmentShaderPath);
     unsigned int geometryShader=this->getGeometryShader(geometryShaderPath);
@@ -104,7 +106,6 @@ unsigned int Shader::getVertexShader(const char *vertexShaderPath){
     const char *shaderSource = source.c_str();
     int success;
     char info[512];
-
     unsigned int shaderID = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(shaderID, 1, &shaderSource, nullptr);
     glCompileShader(shaderID);
@@ -123,7 +124,6 @@ unsigned int Shader::getVertexShader(const char *vertexShaderPath){
 }
 
 unsigned int Shader::getFragmentShader(const char *fragmentShaderPath){
-    std::cout<<fragmentShaderPath<<std::endl;
     // 1. 从文件路径中获取顶点/片段着色器
     std::string source;
     std::ifstream shaderFile;
@@ -158,14 +158,13 @@ unsigned int Shader::getFragmentShader(const char *fragmentShaderPath){
     if (!success)
     {
         glGetShaderInfoLog(shaderID, 512, nullptr, info);
-        std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+        std::cerr << "ERROR::SHADER::Fragment::COMPILATION_FAILED\n"
                   << info << '\n';
     }
     else
     {
-        std::cout << "VERTEX SHADER COMPILE SUCCESS" << '\n';
+        std::cout << "Fragment SHADER COMPILE SUCCESS" << '\n';
     }
-    delete shaderSource;
     return shaderID;
 }
 
@@ -210,7 +209,30 @@ unsigned int Shader::getGeometryShader(const char *geometryShaderPath){
     {
         std::cout << "VERTEX SHADER COMPILE SUCCESS" << '\n';
     }
-    delete shaderSource;
     return shaderID;
 }
 
+
+void Shader::setInt(const char *name, int value)
+{
+    glUniform1i(glGetUniformLocation(ID, name), value);
+}
+void Shader::setBool(const char * name,bool value){
+    glUniform1i(glGetUniformLocation(ID, name), value);
+}
+void Shader::setFloat(const char *name, float value)
+{
+    glUniform1f(glGetUniformLocation(ID, name), value);
+}
+void Shader::setVector3f(const char *name, int count, const float *value)
+{
+    glUniform3fv(glGetUniformLocation(ID, name), count, value);
+}
+void Shader::setVector2f(const char *name, int count, const float *value)
+{
+    glUniform2fv(glGetUniformLocation(ID, name), count, value);
+}
+void Shader::setMatrix4f(const char *name, int count, const float *value)
+{
+    glUniformMatrix4fv(glGetUniformLocation(ID, name), count, GL_FALSE, value);
+}

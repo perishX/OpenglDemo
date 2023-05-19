@@ -11,8 +11,10 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+
 #include "Viewer.h"
 #include "Shader.h"
+#include "Cube.h"
 
 class MyOpenGLWidget : public QOpenGLWidget, QOpenGLFunctions_3_3_Core{
     Q_OBJECT
@@ -31,66 +33,15 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
 
 private:
-    unsigned int init(const char* vertexShaderPath,const char* fragmentShaderPath);
-    unsigned int init(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath);
-    unsigned int getVertexShader(const char* vertexShaderPath);
-    unsigned int getFragmentShader(const char* fragmentShaderPath);
-    unsigned int getGeometryShader(const char* geometryShaderPath);
-
-    float vertices[108] = {
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, -0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f,
-
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, -0.5f,
-        -0.5f, -0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-
-        -0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, -0.5f,
-        0.5f, -0.5f, 0.5f,
-        0.5f, -0.5f, 0.5f,
-        -0.5f, -0.5f, 0.5f,
-        -0.5f, -0.5f, -0.5f,
-
-        -0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, -0.5f,
-        0.5f, 0.5f, 0.5f,
-        0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, 0.5f,
-        -0.5f, 0.5f, -0.5f};
-
-    unsigned int VBO_id{};
-    unsigned int VAO_id{};
-    unsigned int shader_id{};
     float lastX{};
     float lastY{};
     int g_width{1920};
     int g_height{964};
-    int count{};
 
     Viewer viewer{};
+    Shader shader{};
     unsigned int ID{};
+    Cube cube{};
 signals:
 };
 

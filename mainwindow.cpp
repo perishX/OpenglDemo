@@ -10,7 +10,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->actionOpenModel,&QAction::triggered,this,&MainWindow::openModel);
     connect(ui->actionExit,&QAction::triggered,this,&MainWindow::exit);
     connect(ui->actionAbout,&QAction::triggered,this,&MainWindow::about);
-    std::cout<<this->width()<<" "<<this->height()<<std::endl;
+    //std::cout<<this->width()<<" "<<this->height()<<std::endl;
 }
 
 MainWindow::~MainWindow()
