@@ -17,6 +17,8 @@ DEFINES += QT_DEPRECATED_WARNINGS
 
 SOURCES += \
     Cube.cpp \
+    Mesh.cpp \
+    Model.cpp \
     Shader.cpp \
     Viewer.cpp \
     main.cpp \
@@ -25,7 +27,11 @@ SOURCES += \
 
 HEADERS += \
     Cube.h \
+    Mesh.h \
+    Model.h \
     Shader.h \
+    Texture.h \
+    Vertex.h \
     Viewer.h \
     mainwindow.h \
     myopenglwidget.h
@@ -47,4 +53,6 @@ CONFIG +=console
 
 DISTFILES += \
     shaders/shader.frag \
-    shaders/shader.vert
+    shaders/shader.vert \
+    glm/* \
+    assimp/*
