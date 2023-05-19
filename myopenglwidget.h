@@ -11,6 +11,8 @@
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 #include "glm/gtc/type_ptr.hpp"
+#include "Viewer.h"
+#include "Shader.h"
 
 class MyOpenGLWidget : public QOpenGLWidget, QOpenGLFunctions_3_3_Core{
     Q_OBJECT
@@ -29,7 +31,12 @@ protected:
     virtual void wheelEvent(QWheelEvent *event);
 
 private:
-    void updateDirection(float yawOffset,float pitchOffset);
+    unsigned int init(const char* vertexShaderPath,const char* fragmentShaderPath);
+    unsigned int init(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath);
+    unsigned int getVertexShader(const char* vertexShaderPath);
+    unsigned int getFragmentShader(const char* fragmentShaderPath);
+    unsigned int getGeometryShader(const char* geometryShaderPath);
+
     float vertices[108] = {
         -0.5f, -0.5f, -0.5f,
         0.5f, -0.5f, -0.5f,
@@ -76,22 +83,14 @@ private:
     unsigned int VBO_id{};
     unsigned int VAO_id{};
     unsigned int shader_id{};
-    glm::vec3 Pos{1,1,5};
-    glm::vec3 Front{0,0,-1};
-    glm::vec3 Up{0,1,0};
-    glm::vec3 Right{};
-    glm::vec3 WorldUp{0,1,0};
-    float yaw{-90};
-    float pitch{};
     float lastX{};
     float lastY{};
-    float fov{45.f};
     int g_width{1920};
     int g_height{964};
-    float forwardFlag{};
-    float rightFlag{};
-    float upFlag{};
     int count{};
+
+    Viewer viewer{};
+    unsigned int ID{};
 signals:
 };
 

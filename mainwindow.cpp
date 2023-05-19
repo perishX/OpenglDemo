@@ -24,6 +24,8 @@ void MainWindow::resizeEvent(QResizeEvent *event){
 
 void MainWindow::openModel(){
     std::cout<<"openModel trigger!!!"<<std::endl;
+    QString filename = QFileDialog::getOpenFileName(this,tr("选择模型"),tr("C:/Users/73965/Downloads"),tr("*.fbx *.obj"));
+    std::cout<<filename.toStdString()<<std::endl;
 }
 
 void MainWindow::exit(){

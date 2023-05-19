@@ -21,11 +21,12 @@ const char* fragmentShaderSource=
 
 MyOpenGLWidget::MyOpenGLWidget(QWidget *parent):QOpenGLWidget{parent}{
     this->grabKeyboard();
-    this->updateDirection(0,0);
+    this->viewer.updateDirection();
+
 }
 
 void MyOpenGLWidget::resizeEvent(QResizeEvent *event){
-    std::cout<<"MyOpenGLWidget: "<<this->width()<<" "<<this->height()<<std::endl;
+    //std::cout<<"MyOpenGLWidget: "<<this->width()<<" "<<this->height()<<std::endl;
     this->g_width=this->width();
     this->g_height=this->height();
     //glViewport(0,0,this->g_width,this->g_height);
@@ -35,53 +36,45 @@ void MyOpenGLWidget::resizeEvent(QResizeEvent *event){
 void MyOpenGLWidget::keyPressEvent(QKeyEvent *event){
     //std::cout<<"MyOpenGLWidget: keyPressEvent "<<std::endl;
     if(event->key()==Qt::Key_W){
-        std::cout<<"w"<<std::endl;
-        this->forwardFlag=1;
+        this->viewer.setForwardFlag(1);
     }else if(event->key()==Qt::Key_S){
-        std::cout<<"s"<<std::endl;
-        this->forwardFlag=-1;
+        this->viewer.setForwardFlag(-1);
     }
 
     if(event->key()==Qt::Key_D){
-        std::cout<<"d"<<std::endl;
-        this->rightFlag=1;
+       this->viewer.setRightFlag(1);
     }else if(event->key()==Qt::Key_A){
-        std::cout<<"a"<<std::endl;
-        this->rightFlag=-1;
+        this->viewer.setRightFlag(-1);
     }
 
     if(event->key()==Qt::Key_Q){
-        std::cout<<"q"<<std::endl;
-        this->upFlag=1;
+        this->viewer.setUpFlag(1);
     }else if(event->key()==Qt::Key_E){
-        std::cout<<"e"<<std::endl;
-        this->upFlag=-1;
+        this->viewer.setUpFlag(-1);
     }
-    this->Pos += (this->Front * this->forwardFlag + this->Right * this->rightFlag + this->WorldUp * this->upFlag) * 0.1f;
+    this->viewer.move();
     update();
 }
 
 void MyOpenGLWidget::keyReleaseEvent(QKeyEvent *event){
-    std::cout<<"keyReleaseEvent"<<std::endl;
+    //std::cout<<"keyReleaseEvent"<<std::endl;
     if(event->key()==Qt::Key_W || event->key()==Qt::Key_S){
-        this->forwardFlag=0;
+        this->viewer.setForwardFlag(0);
     }
 
     if(event->key()==Qt::Key_D || event->key()==Qt::Key_A){
-        this->rightFlag=0;
+        this->viewer.setRightFlag(0);
     }
 
     if(event->key()==Qt::Key_Q || event->key()==Qt::Key_E){
-        this->upFlag=0;
+        this->viewer.setUpFlag(0);
     }
 }
 
 void MyOpenGLWidget::mousePressEvent(QMouseEvent *event){
     if(event->button()==Qt::LeftButton){
-        std::cout<<"LeftButton Press"<<std::endl;
     }
     if(event->button()==Qt::RightButton){
-        std::cout<<"RightButton Press"<<std::endl;
         this->lastX=event->x();
         this->lastY=event->y();
     }
@@ -89,15 +82,13 @@ void MyOpenGLWidget::mousePressEvent(QMouseEvent *event){
 
 void MyOpenGLWidget::mouseReleaseEvent(QMouseEvent *event){
     if(event->button()==Qt::LeftButton){
-        std::cout<<"LeftButton Release"<<std::endl;
     }
     if(event->button()==Qt::RightButton){
-        std::cout<<"RightButton Release"<<std::endl;
     }
 }
 
 void MyOpenGLWidget::mouseMoveEvent(QMouseEvent *event){
-    std::cout<<"mouseMoveEvent: "<<event->x()<<" "<<event->y()<<std::endl;
+    //std::cout<<"mouseMoveEvent: "<<event->x()<<" "<<event->y()<<std::endl;
     if(event->buttons()&Qt::RightButton){
         float xOffset=event->x()-this->lastX;
         float yOffset=this->lastY-event->y();
@@ -105,7 +96,7 @@ void MyOpenGLWidget::mouseMoveEvent(QMouseEvent *event){
         this->lastX=event->x();
         this->lastY=event->y();
 
-        this->updateDirection(xOffset,yOffset);
+        this->viewer.updateDirection(xOffset,yOffset);
         update();
     }
 
@@ -118,37 +109,13 @@ void MyOpenGLWidget::wheelEvent(QWheelEvent *event){
     }else{
         offset=1;
     }
-    if (this->fov >= 1.f && this->fov <= 45.f){
-        this->fov += offset;
-    }
-    if (this->fov < 1.f){
-        this->fov = 1.f;
-    }
-    if (this->fov > 45.f){
-        this->fov = 45.f;
-    }
+    this->viewer.zoom(offset);
     update();
 }
 
-void MyOpenGLWidget::updateDirection(float yawOffset, float pitchOffset){
-    this->yaw += yawOffset*0.1;
-    this->pitch += pitchOffset *0.1;
-
-    glm::vec3 front{};
-    front.y = sin(glm::radians(pitch));
-    front.x = cos(glm::radians(pitch)) * cos(glm::radians(yaw));
-    front.z = cos(glm::radians(pitch)) * sin(glm::radians(yaw));
-    this->Front = glm::normalize(front);
-
-    this->Right = glm::normalize(glm::cross(this->Front, this->WorldUp));
-    this->Up = glm::normalize(glm::cross(this->Right,this->Front));
-
-}
-
 void MyOpenGLWidget::initializeGL(){
-    std::cout<<"MyOpenGLWidget::initializeGL"<<std::endl;
+    //std::cout<<"MyOpenGLWidget::initializeGL"<<std::endl;
     initializeOpenGLFunctions();
-
     glGenVertexArrays(1,&this->VAO_id);
     glGenBuffers(1,&this->VBO_id);
     glBindVertexArray(this->VAO_id);
@@ -159,32 +126,18 @@ void MyOpenGLWidget::initializeGL(){
     glBindBuffer(GL_ARRAY_BUFFER,0);
     glBindVertexArray(0);
 
-    unsigned int vertexShaderID=glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vertexShaderID,1,&vertexShaderSource,nullptr);
-    glCompileShader(vertexShaderID);
-
-    unsigned int fragmentShaderID=glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fragmentShaderID,1,&fragmentShaderSource,nullptr);
-    glCompileShader(fragmentShaderID);
-
-    this->shader_id=glCreateProgram();
-    glAttachShader(this->shader_id,vertexShaderID);
-    glAttachShader(this->shader_id,fragmentShaderID);
-    glLinkProgram(this->shader_id);
-
-    glDeleteShader(vertexShaderID);
-    glDeleteShader(fragmentShaderID);
+    this->ID = this->init("C:/Users/73965/Documents/demo/shaders/shader.vert","C:/Users/73965/Documents/demo/shaders/shader.frag");
 
     glEnable(GL_DEPTH_TEST);
 }
 
 void MyOpenGLWidget::resizeGL(int w, int h){
-    std::cout<<"MyOpenGLWidget::resizeGL"<<std::endl;
+    //std::cout<<"MyOpenGLWidget::resizeGL"<<std::endl;
     //glViewport(0,0,this->g_width,this->g_height);
 }
 
 void MyOpenGLWidget::paintGL(){
-    std::cout<<"MyOpenGLWidget::paintGL"<<std::endl;
+    //std::cout<<"MyOpenGLWidget::paintGL"<<std::endl;
 
     glViewport(0,0,this->g_width,this->g_height);
 
@@ -192,19 +145,213 @@ void MyOpenGLWidget::paintGL(){
     glClear(GL_COLOR_BUFFER_BIT);
 
     glm::mat4 model = glm::mat4{1.0f};
-            // float rotateAngle = glm::radians(20.f) + glfwGetTime();
-            // model = glm::rotate(model, rotateAngle, glm::vec3(1.0f, 0.3f, 0.5f));
     glm::mat4 view = glm::mat4{1.0f};
-    view = glm::lookAt(this->Pos, this->Pos + this->Front, this->Up);
+    view = this->viewer.getViewMatrix();
     glm::mat4 perspective = glm::mat4{1.0f};
-    perspective = glm::perspective(glm::radians(this->fov), static_cast<float>(this->g_width) / static_cast<float>(this->g_height), 0.1f, 100.0f);
+    perspective = glm::perspective(glm::radians(this->viewer.getFov()), static_cast<float>(this->g_width) / static_cast<float>(this->g_height), 0.1f, 100.0f);
 
-    glUseProgram(this->shader_id);
-    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "model"), 1, GL_FALSE, glm::value_ptr(model));
-    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "view"), 1, GL_FALSE, glm::value_ptr(view));
-    glUniformMatrix4fv(glGetUniformLocation(this->shader_id, "perspective"), 1, GL_FALSE, glm::value_ptr(perspective));
+    //glUseProgram(this->shader_id);
+    glUseProgram(this->ID);
+    glUniformMatrix4fv(glGetUniformLocation(this->ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+    glUniformMatrix4fv(glGetUniformLocation(this->ID, "view"), 1, GL_FALSE, glm::value_ptr(view));
+    glUniformMatrix4fv(glGetUniformLocation(this->ID, "perspective"), 1, GL_FALSE, glm::value_ptr(perspective));
 
     glBindVertexArray(this->VAO_id);
     glDrawArrays(GL_TRIANGLES,0,36);
 
 }
+
+
+unsigned int MyOpenGLWidget::init(const char* vertexShaderPath,const char* fragmentShaderPath){
+    unsigned int vertexShader=this->getVertexShader(vertexShaderPath);
+    unsigned int fragmentShader=this->getFragmentShader(fragmentShaderPath);
+
+    unsigned int shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glLinkProgram(shaderProgram);
+
+    int success;
+    char info[512];
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, info);
+        std::cerr << "ERROR::LINK_FAILED\n"
+                  << info << '\n';
+    }
+    else
+    {
+        std::cout << "LINK SUCCESS" << '\n';
+    }
+
+    glDeleteShader(fragmentShader);
+    glDeleteShader(vertexShader);
+
+    return shaderProgram;
+}
+
+unsigned int MyOpenGLWidget::init(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath){
+    unsigned int vertexShader=this->getVertexShader(vertexShaderPath);
+    unsigned int fragmentShader=this->getFragmentShader(fragmentShaderPath);
+    unsigned int geometryShader=this->getGeometryShader(geometryShaderPath);
+
+    unsigned int shaderProgram = glCreateProgram();
+    glAttachShader(shaderProgram, vertexShader);
+    glAttachShader(shaderProgram, fragmentShader);
+    glAttachShader(shaderProgram, geometryShader);
+    glLinkProgram(shaderProgram);
+
+    int success;
+    char info[512];
+    glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
+    if (!success)
+    {
+        glGetProgramInfoLog(shaderProgram, 512, nullptr, info);
+        std::cerr << "ERROR::LINK_FAILED\n"
+                  << info << '\n';
+    }
+    else
+    {
+        std::cout << "LINK SUCCESS" << '\n';
+    }
+
+    glDeleteShader(fragmentShader);
+    glDeleteShader(vertexShader);
+    glDeleteShader(geometryShader);
+
+    return shaderProgram;
+}
+
+unsigned int MyOpenGLWidget::getVertexShader(const char *vertexShaderPath){
+    // 1. 从文件路径中获取顶点/片段着色器
+    std::string source;
+    std::ifstream shaderFile;
+    // 保证ifstream对象可以抛出异常：
+    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        // 打开文件
+        shaderFile.open(vertexShaderPath);
+        std::stringstream shaderStream;
+        // 读取文件的缓冲内容到数据流中
+        shaderStream << shaderFile.rdbuf();
+        // 关闭文件处理器
+        shaderFile.close();
+        // 转换数据流到string
+        source = shaderStream.str();
+    }
+    catch (std::ifstream::failure e)
+    {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+    }
+    const char *shaderSource = source.c_str();
+    int success;
+    char info[512];
+
+    unsigned int shaderID = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(shaderID, 1, &shaderSource, nullptr);
+    glCompileShader(shaderID);
+    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(shaderID, 512, nullptr, info);
+        std::cerr << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n"
+                  << info << '\n';
+    }
+    else
+    {
+        std::cout << "VERTEX SHADER COMPILE SUCCESS" << '\n';
+    }
+    return shaderID;
+}
+
+unsigned int MyOpenGLWidget::getFragmentShader(const char *fragmentShaderPath){
+    // 1. 从文件路径中获取顶点/片段着色器
+    std::string source;
+    std::ifstream shaderFile;
+    // 保证ifstream对象可以抛出异常：
+    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        // 打开文件
+        shaderFile.open(fragmentShaderPath);
+        std::stringstream shaderStream;
+        // 读取文件的缓冲内容到数据流中
+        shaderStream << shaderFile.rdbuf();
+        // 关闭文件处理器
+        shaderFile.close();
+        // 转换数据流到string
+        source = shaderStream.str();
+    }
+    catch (std::ifstream::failure e)
+    {
+        std::cout<<fragmentShaderPath<<std::endl;
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+    }
+    const char *shaderSource = source.c_str();
+
+    int success;
+    char info[512];
+
+    unsigned int shaderID = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(shaderID, 1, &shaderSource, nullptr);
+    glCompileShader(shaderID);
+    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(shaderID, 512, nullptr, info);
+        std::cerr << "ERROR::SHADER::Fragment::COMPILATION_FAILED\n"
+                  << info << '\n';
+    }
+    else
+    {
+        std::cout << "Fragment SHADER COMPILE SUCCESS" << '\n';
+    }
+    return shaderID;
+}
+
+unsigned int MyOpenGLWidget::getGeometryShader(const char *geometryShaderPath){
+    // 1. 从文件路径中获取顶点/片段着色器
+    std::string source;
+    std::ifstream shaderFile;
+    // 保证ifstream对象可以抛出异常：
+    shaderFile.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try
+    {
+        // 打开文件
+        shaderFile.open(geometryShaderPath);
+        std::stringstream shaderStream;
+        // 读取文件的缓冲内容到数据流中
+        shaderStream << shaderFile.rdbuf();
+        // 关闭文件处理器
+        shaderFile.close();
+        // 转换数据流到string
+        source = shaderStream.str();
+    }
+    catch (std::ifstream::failure e)
+    {
+        std::cout << "ERROR::SHADER::FILE_NOT_SUCCESFULLY_READ" << std::endl;
+    }
+    const char *shaderSource = source.c_str();
+
+    int success;
+    char info[512];
+
+    unsigned int shaderID = glCreateShader(GL_GEOMETRY_SHADER);
+    glShaderSource(shaderID, 1, &shaderSource, nullptr);
+    glCompileShader(shaderID);
+    glGetShaderiv(shaderID, GL_COMPILE_STATUS, &success);
+    if (!success)
+    {
+        glGetShaderInfoLog(shaderID, 512, nullptr, info);
+        std::cerr << "ERROR::SHADER::Geometry::COMPILATION_FAILED\n"
+                  << info << '\n';
+    }
+    else
+    {
+        std::cout << "Geometry SHADER COMPILE SUCCESS" << '\n';
+    }
+    return shaderID;
+}
+

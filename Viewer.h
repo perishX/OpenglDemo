@@ -9,7 +9,17 @@ class Viewer{
 public:
     Viewer();
     ~Viewer();
-    void updateDirection(float yawOffset, float pitchOffset);
+    void updateDirection(float yawOffset=0, float pitchOffset=0);
+    void move();
+    void zoom(float offset);
+    void setForwardFlag(float flag);
+    void setRightFlag(float flag);
+    void setUpFlag(float flag);
+    float getForwardFlag();
+    float getRightFlag();
+    float getUpFlag();
+    float getFov();
+    glm::mat4 getViewMatrix();
 private:
     glm::vec3 Pos{1,1,5};
     glm::vec3 Front{0,0,-1};
@@ -18,8 +28,6 @@ private:
     glm::vec3 WorldUp{0,1,0};
     float yaw{-90};
     float pitch{};
-    float lastX{};
-    float lastY{};
     float fov{45.f};
     float forwardFlag{};
     float rightFlag{};
