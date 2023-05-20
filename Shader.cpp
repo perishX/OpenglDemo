@@ -4,8 +4,12 @@ Shader::Shader(){
 
 }
 
+Shader::Shader(QOpenGLWidget* parent){
+    this->parent=parent;
+}
+
 Shader::Shader(const char* vertexShaderPath,const char* fragmentShaderPath){
-    this->init(vertexShaderPath,fragmentShaderPath);
+//    this->init(vertexShaderPath,fragmentShaderPath);
 }
 Shader::Shader(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath){
     this->init(vertexShaderPath,fragmentShaderPath,geometryShaderPath);
@@ -18,7 +22,7 @@ unsigned int Shader::getID(){
     return this->ID;
 }
 
-void Shader::init(const char* vertexShaderPath,const char* fragmentShaderPath){
+void Shader::init(QOpenGLWidget* widget,const char* vertexShaderPath,const char* fragmentShaderPath){
     initializeOpenGLFunctions();
     unsigned int vertexShader=this->getVertexShader(vertexShaderPath);
     unsigned int fragmentShader=this->getFragmentShader(fragmentShaderPath);
@@ -49,7 +53,8 @@ void Shader::init(const char* vertexShaderPath,const char* fragmentShaderPath){
 }
 
 void Shader::init(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath){
-    initializeOpenGLFunctions();
+    //initializeOpenGLFunctions();
+    this->parent->makeCurrent();
     unsigned int vertexShader=this->getVertexShader(vertexShaderPath);
     unsigned int fragmentShader=this->getFragmentShader(fragmentShaderPath);
     unsigned int geometryShader=this->getGeometryShader(geometryShaderPath);

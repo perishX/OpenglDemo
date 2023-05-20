@@ -56,3 +56,9 @@ DISTFILES += \
     shaders/shader.vert \
     glm/* \
     assimp/*
+
+LIBS += -L$$PWD/../../../../msys64/mingw64/lib/ -llibassimp
+LIBS += -L$$PWD/../../../../msys64/mingw64/bin/ -llibassimp-5
+
+INCLUDEPATH += $$PWD/../../../../msys64/mingw64/include
+

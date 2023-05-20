@@ -2,11 +2,16 @@
 
 Model::Model(std::string path)
 {
-    loadModel(path);
+    this->path=path;
 }
 
 Model::~Model()
 {
+}
+
+void Model::load(){
+    initializeOpenGLFunctions();
+    this->loadModel(this->path);
 }
 
 void Model::Draw(Shader shader, bool isLineMode)
@@ -19,27 +24,28 @@ void Model::Draw(Shader shader, bool isLineMode)
 
 void Model::loadModel(std::string path)
 {
-    initializeOpenGLFunctions();
     Assimp::Importer import{};
     const aiScene *scene = import.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
-
     if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
     {
         std::cout << "ERROR::ASSIMP::" << import.GetErrorString() << std::endl;
         return;
     }
-    directory = path.substr(0, path.find_last_of('/'));
+    directory = path.substr(0, path.find_last_of('\\'));
 
     processNode(scene->mRootNode, scene);
 }
 
 void Model::processNode(aiNode *node, const aiScene *scene)
 {
+    initializeOpenGLFunctions();
     // 处理节点所有的网格（如果有的话）
+    std::cout<<"allnodes "  <<node->mNumMeshes<<std::endl;
     for (unsigned int i = 0; i < node->mNumMeshes; i++)
     {
         aiMesh *mesh = scene->mMeshes[node->mMeshes[i]];
         meshes.push_back(processMesh(mesh, scene));
+        std::cout<<"node "<<i<<std::endl;
     }
     // 接下来对它的子节点重复这一过程
     for (unsigned int i = 0; i < node->mNumChildren; i++)
@@ -50,10 +56,10 @@ void Model::processNode(aiNode *node, const aiScene *scene)
 
 Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
 {
+    std::cout<<"mesh"<<std::endl;
     std::vector<Vertex> vertices;
     std::vector<unsigned int> indices;
     std::vector<Texture> textures;
-
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
     {
         Vertex vertex{};
@@ -81,8 +87,6 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         {
             vertex.TexCoords = glm::vec2(0.0f, 0.0f);
         }
-
-        vertices.push_back(vertex);
     }
 
     for (int i = 0; i < mesh->mNumFaces; i++)
@@ -108,13 +112,15 @@ Mesh Model::processMesh(aiMesh *mesh, const aiScene *scene)
         textures.insert(textures.end(), reflectMaps.begin(), reflectMaps.end());
     }
 
-    return Mesh(vertices, indices, textures);
+    Mesh res{vertices, indices, textures};
+    res.init();
+    return res;
 }
 
 std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType type,
                                                  std::string typeName)
 {
-
+    std::cout<<type<<" "<<typeName<<std::endl;
     std::vector<Texture> textures;
     for (int i = 0; i < mat->GetTextureCount(type); i++)
     {
@@ -146,8 +152,8 @@ std::vector<Texture> Model::loadMaterialTextures(aiMaterial *mat, aiTextureType 
 
 unsigned int Model::TextureFromFile(const char *path, const std::string &directory, bool gamma)
 {
-    std::string filename = directory + "/" + std::string(path);
-
+    std::string filename = directory + "\\" + std::string(path);
+    std::cout<<filename<<std::endl;
     int width, height, nrChannels;
     unsigned char *data = stbi_load(filename.c_str(), &width, &height, &nrChannels, 0);
 

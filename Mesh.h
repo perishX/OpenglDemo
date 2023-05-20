@@ -26,7 +26,7 @@ public:
     Mesh();
     Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
     ~Mesh();
-
+    void init();
     void Draw(Shader shader, bool isLineMode = false);
 };
 

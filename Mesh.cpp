@@ -13,8 +13,6 @@ Mesh::Mesh()
     this->vertices.push_back(vertex1);
     this->vertices.push_back(vertex2);
     this->vertices.push_back(vertex3);
-
-    setupMesh();
 }
 
 Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures)
@@ -22,17 +20,19 @@ Mesh::Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std:
     this->vertices = vertices;
     this->textures = textures;
     this->indices = indices;
-
-    setupMesh();
 }
 
 Mesh::~Mesh()
 {
 }
 
+void Mesh::init(){
+    initializeOpenGLFunctions();
+    this->setupMesh();
+}
+
 void Mesh::setupMesh()
 {
-    initializeOpenGLFunctions();
     glGenVertexArrays(1, &VAO);
     glGenBuffers(1, &VBO);
     glGenBuffers(1, &EBO);

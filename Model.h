@@ -11,6 +11,7 @@
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include "glm/glm.hpp"
+#define STB_IMAGE_STATIC
 #define STB_IMAGE_IMPLEMENTATION
 #include "stb_image/stb_image.h"
 
@@ -30,10 +31,13 @@ private:
     std::vector<Texture> loadMaterialTextures(aiMaterial *mat, aiTextureType type,
                                               std::string typeName);
     unsigned int TextureFromFile(const char *path, const std::string &directory, bool gamma = false);
+
+    std::string path{};
 public:
     std::vector<Mesh> meshes;
     Model(std::string path);
     ~Model();
+    void load();
     void Draw(Shader shader, bool isLineMode = false);
 };
 

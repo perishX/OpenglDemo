@@ -3,7 +3,6 @@
 MyOpenGLWidget::MyOpenGLWidget(QWidget *parent):QOpenGLWidget{parent}{
     this->grabKeyboard();
     this->viewer.updateDirection();
-
 }
 
 void MyOpenGLWidget::resizeEvent(QResizeEvent *event){
@@ -92,9 +91,9 @@ void MyOpenGLWidget::initializeGL(){
     initializeOpenGLFunctions();
 
     this->cube.init();
-    this->shader.init("C:/Users/73965/Documents/demo/shaders/shader.vert","C:/Users/73965/Documents/demo/shaders/shader.frag");
+    this->shader.init(this,"C:/Users/73965/Documents/demo/shaders/shader.vert","C:/Users/73965/Documents/demo/shaders/shader.frag");
     this->ID=this->shader.getID();
-
+    //this->model.load();
     glEnable(GL_DEPTH_TEST);
 }
 

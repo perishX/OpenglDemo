@@ -15,6 +15,7 @@
 #include "Viewer.h"
 #include "Shader.h"
 #include "Cube.h"
+#include "Model.h"
 
 class MyOpenGLWidget : public QOpenGLWidget, QOpenGLFunctions_3_3_Core{
     Q_OBJECT
@@ -42,6 +43,7 @@ private:
     Shader shader{};
     unsigned int ID{};
     Cube cube{};
+    Model model{"C:\\Users\\73965\\Documents\\demo\\models\\nanosuit\\nanosuit.obj"};
 signals:
 };
 

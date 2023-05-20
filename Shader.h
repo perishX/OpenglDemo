@@ -5,15 +5,17 @@
 #include <fstream>
 #include <sstream>
 #include <memory>
+#include <QOpenGLWidget>
 #include <QOpenGLFunctions_3_3_Core>
 
 class Shader : public QOpenGLFunctions_3_3_Core{
 public:
     Shader();
+    Shader(QOpenGLWidget* parent);
     Shader(const char* vertexShaderPath,const char* fragmentShaderPath);
     Shader(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath);
     ~Shader();
-    void init(const char* vertexShaderPath,const char* fragmentShaderPath);
+    void init(QOpenGLWidget* widget,const char* vertexShaderPath,const char* fragmentShaderPath);
     void init(const char* vertexShaderPath,const char* fragmentShaderPath,const char* geometryShaderPath);
     unsigned int getID();
     void setInt(const char * name,int value);
@@ -28,6 +30,7 @@ private:
     unsigned int getFragmentShader(const char* fragmentShaderPath);
     unsigned int getGeometryShader(const char* geometryShaderPath);
     unsigned int ID{};
+    QOpenGLWidget* parent;
 };
 
 #endif // SHADER_H
