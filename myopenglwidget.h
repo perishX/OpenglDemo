@@ -43,7 +43,7 @@ private:
     Shader shader{};
     unsigned int ID{};
     Cube cube{};
-    Model model{"C:\\Users\\73965\\Documents\\demo\\models\\nanosuit\\nanosuit.obj"};
+    //Model model{"C:\\Users\\73965\\Documents\\demo\\models\\nanosuit\\nanosuit.obj"};
 signals:
 };
 

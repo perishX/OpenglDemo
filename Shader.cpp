@@ -23,6 +23,7 @@ unsigned int Shader::getID(){
 }
 
 void Shader::init(QOpenGLWidget* widget,const char* vertexShaderPath,const char* fragmentShaderPath){
+    //QOpenGLFunctions_3_3_Core::initializeOpenGLFunctions();
     initializeOpenGLFunctions();
     unsigned int vertexShader=this->getVertexShader(vertexShaderPath);
     unsigned int fragmentShader=this->getFragmentShader(fragmentShaderPath);

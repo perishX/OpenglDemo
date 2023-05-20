@@ -8,7 +8,7 @@
 #include <QOpenGLWidget>
 #include <QOpenGLFunctions_3_3_Core>
 
-class Shader : public QOpenGLFunctions_3_3_Core{
+class Shader:public QOpenGLFunctions_3_3_Core{
 public:
     Shader();
     Shader(QOpenGLWidget* parent);
